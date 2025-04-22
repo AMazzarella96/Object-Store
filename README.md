@@ -6,13 +6,13 @@ In particular, it will be necessary to implement:
 - a library intended to be embedded in clients that interfaces with the object store using the protocol defined below
 - an example client that uses the library to test the operation of the system
 
-# Object-Store
+## Object-Store
 The object store is an executable whose purpose is to receive requests from clients to store, retrieve, delete named blocks of data, called “objects.” The object store:
 - manages a separate storage space for each client
 - object names are guaranteed to be unique within a client's storage space
 - client names are guaranteed to be all distinct
 
-# Files & Structure
+## Files & Structure
 
 The project consists of two main files: mainServer.c, mainClient.c, and a utility directory
 containing the files os_lib.c/h, related to the library for client-side functions, utils.c/h, in which is defined
@@ -46,8 +46,7 @@ the os_disconnect() function is called on the output, which sends a request to
 disconnect to the server.
 
 
-
-- os_lib.c
+- `os_lib.c`
 File containing the implementation of the functions used by the client to send requests
 to the server according to the defined communication protocol. Within it is defined a
 global variable int sock related to the client socket, set by the os_connect() method in
@@ -58,7 +57,7 @@ reception of large block sizes (functions defined within utils.c). An additional
 support function is checkresponse, which takes care of checking whether the message received
 from the server is an “OK” or “KO” message.
 
-- utils.c/h
+- `utils.c/h`
 (.h) Interface containing a macro for checking allocated pointers (CHECK_PTR),
 an enum representing different operations, and a struct associating the enum value with a
 string, which is used by the strtoenum function for passing from stiringa to enum.
@@ -67,7 +66,7 @@ such as readn and writen to make up for partial read/write problems, split which
 task of splitting requests word by word by returning an array of strings and the number
 of split words, and finally the strtoenum mentioned above.
 
-- report.h
+- `report.h`
 Server-side interface in which a struct info has been defined for the purpose of reporting the status of the
 system and related functions for updating parameters and printing the report. It consists of.
 of the following parameters:
@@ -78,7 +77,7 @@ Since these are functions called by the different threads, a mutex was declared 
 mutual exclusion to the struct, except for addusr() and printrep() which are called only
 by the main thread of the server.
 
-- status.h
+- `status.h`
 Client-side interface in which a struct stat has been defined for the purpose of reporting the status of the
 operations performed by clients with associated functions for updating and printing the
 statistics. It consists of the following parameters:
@@ -86,3 +85,20 @@ statistics. It consists of the following parameters:
 - op_success: number of successful operations;
 - op_failed: number of failed perations.
 Being peculiar to each client, no mute exclusion mechanism was necessary.
+
+## Signal Handling
+
+Regarding signal management, a mechanism has been defined to prevent the server from
+terminating leaving the system in an inconsistent state. The idea is that the server terminates only in the case
+when there is no client connected. To do this, two functions, sighandler and
+catcher, and two global variables: volatile sig_atomic_t sigflag initialized to 0, set within the
+catcher function (volatile sig_atomic_t to ensure signal safe access) and int running to manage
+task execution. The server's listening loop at each iteration tests sigflag to monitor the
+reception of any signals and, in case of USR1, prints the report and resets the flag,
+while if it intercepts a termination signal it proceeds to initiate termination phase in which it waits for
+clients to finish and then deallocates all used resources and terminates the server.
+
+**Operation**: Once installed, the signal manager sets up the facility for recording
+signals. The signals registered are SIGINT, SIGTERM, SIGQUIT and SIGUSR1. The handler uses
+a catcher function for signal recognition which, in the case of a termination signal,
+resets the global running variable and in each case then sets the sigflag variable with the captured signal.
