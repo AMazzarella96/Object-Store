@@ -70,9 +70,9 @@ of split words, and finally the strtoenum mentioned above.
 Server-side interface in which a struct info has been defined for the purpose of reporting the status of the
 system and related functions for updating parameters and printing the report. It consists of.
 of the following parameters:
-- users: indicates the number of online users;
-- objcount: indicates the total number of files in the system;
-- totsize: indicates the total size of files present in the system.
+  - *users*: indicates the number of online users;
+  - *objcount*: indicates the total number of files in the system;
+  - *totsize*: indicates the total size of files present in the system.
 Since these are functions called by the different threads, a mutex was declared for access in
 mutual exclusion to the struct, except for addusr() and printrep() which are called only
 by the main thread of the server.
@@ -81,9 +81,9 @@ by the main thread of the server.
 Client-side interface in which a struct stat has been defined for the purpose of reporting the status of the
 operations performed by clients with associated functions for updating and printing the
 statistics. It consists of the following parameters:
-- op_count: total count of executed operations;
-- op_success: number of successful operations;
-- op_failed: number of failed perations.
+  - *op_count*: total count of executed operations;
+  - *op_success*: number of successful operations;
+  - *op_failed*: number of failed perations.
 Being peculiar to each client, no mute exclusion mechanism was necessary.
 
 ## Signal Handling
