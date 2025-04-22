@@ -32,7 +32,7 @@ proposito si avvale di una enum opt e una funzione strtoenum per la conversione 
 valore numerico. Infine, è stato definito un meccanismo per la gestione dei segnali per evitare
 di lasciare il sistema in situazioni di inconsistenza; definito in un apposito paragrafo.
 
-- mainClient.c
+- `mainClient.c`
 Il file rappresenta l’implementazione del Client di ObjectStore, in cui all’avvio, dopo essersi
 accertati che i parametri passati per argomento sono corretti, viene effettuata una chiamata
 alla funzione os_connect() per instaurare la connessione con il server e successivamente si
